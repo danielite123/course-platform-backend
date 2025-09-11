@@ -1,0 +1,48 @@
+import { SetMetadata, CustomDecorator } from '@nestjs/common';
+import { Role } from '@prisma/client';
+
+export const ROLES_KEY = 'roles';
+
+/**
+ * Decorator to specify which roles are allowed to access a route
+ * @param roles - Array of roles that can access this route
+ * @example
+ * @Roles(Role.ADMIN)
+ * @Roles(Role.ADMIN, Role.INSTRUCTOR)
+ * @Roles(Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN)
+ */
+export const Roles = (...roles: Role[]): CustomDecorator<string> =>
+  SetMetadata(ROLES_KEY, roles);
+
+/**
+ * Decorator for admin-only routes
+ * @example
+ * @AdminOnly()
+ */
+export const AdminOnly = (): CustomDecorator<string> =>
+  SetMetadata(ROLES_KEY, [Role.ADMIN]);
+
+/**
+ * Decorator for instructor-only routes
+ * @example
+ * @InstructorOnly()
+ */
+export function InstructorOnly(): CustomDecorator<string> {
+  return SetMetadata(ROLES_KEY, [Role.INSTRUCTOR]);
+}
+
+/**
+ * Decorator for instructor and admin routes
+ * @example
+ * @InstructorOrAdmin()
+ */
+export const InstructorOrAdmin = (): CustomDecorator<string> =>
+  SetMetadata(ROLES_KEY, [Role.INSTRUCTOR, Role.ADMIN]);
+
+/**
+ * Decorator for authenticated users (any role)
+ * @example
+ * @Authenticated()
+ */
+export const Authenticated = (): CustomDecorator<string> =>
+  SetMetadata(ROLES_KEY, [Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN]);

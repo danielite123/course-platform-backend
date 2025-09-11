@@ -11,7 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { configurations } from 'src/config/configurations';
 
 interface JwtPayload {
-  userId: string;
+  sub: string;
   [key: string]: any;
 }
 
@@ -41,11 +41,11 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET || configurations().auth.jwt,
       });
 
-      const { userId } = payload;
-      request['userId'] = userId;
+      const { sub } = payload;
+      request['userId'] = sub;
 
       const dbUser = await this.prisma.user.findUniqueOrThrow({
-        where: { id: userId },
+        where: { id: sub },
       });
       request['user'] = { ...payload, ...dbUser };
     } catch {

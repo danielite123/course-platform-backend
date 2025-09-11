@@ -8,6 +8,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { configurations } from './config/configurations';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { configurations } from './config/configurations';
     PrismaModule,
     AuthModule,
     UserModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

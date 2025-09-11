@@ -15,9 +15,10 @@ export class AuthService {
     return bcrypt.hash(password, 10);
   }
 
-  async generateAccessToken(userId: string) {
+  async generateAccessToken(userId: string, role: string) {
     return {
-      accessToken: await this.jwtService.signAsync({ sub: userId }),
+      accessToken: await this.jwtService.signAsync({ sub: userId, role }),
+      role,
     };
   }
 
@@ -42,7 +43,7 @@ export class AuthService {
       },
     });
 
-    return this.generateAccessToken(user.id);
+    return this.generateAccessToken(user.id, user.role);
   }
 
   async login(dto: LoginDto) {
@@ -59,6 +60,6 @@ export class AuthService {
       throw new BadRequestException('Invalid email or password');
     }
 
-    return this.generateAccessToken(user.id);
+    return this.generateAccessToken(user.id, user.role);
   }
 }
