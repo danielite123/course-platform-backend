@@ -16,9 +16,137 @@ enum Role {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  username  String
   password  String
   role      Role     @default(STUDENT)
+  courses   CourseMembership[]
+
+  coursesTaught     Course[]               @relation("InstructorCourses")
+  testAttempts      StudentTestAttempt[]   @relation("StudentTestAttempts")
+  lessonCompletions LessonCompletion[]     @relation("StudentCompletions")
+  reviews           Review[]               @relation("UserReviews")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  username  String?
+}
+
+model Course {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  thumbnail   String?
+
+  instructor     User @relation("InstructorCourses", fields: [instructorId], references: [id])
+  instructorId   String
+
+  category    String?
+  level       String?
+  price       Float?
+  modules     Module[]
+  memberships CourseMembership[]
+  reviews     Review[]      @relation("CourseReviews")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+  title     String
+  order     Int     
+  lessons   Lesson[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  module    Module   @relation(fields: [moduleId], references: [id])
+  moduleId  String
+  title     String
+  content   String
+  videoUrl  String?
+  order     Int      
+  duration  Int?
+  minScore  Float?
+
+  test      Test?    @relation()
+  testId    String?  
+
+  completions LessonCompletion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Test {
+  id          String   @id @default(cuid())
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId    String   @unique
+  title       String
+  description String?
+  minScore    Float?
+
+  questions   Question[]
+  attempts    StudentTestAttempt[]  @relation("TestAttempts")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  test         Test     @relation(fields: [testId], references: [id])
+  testId       String
+  questionText String
+  type         String   
+  options      Json?
+  correctAnswer Json?
+}
+
+model StudentTestAttempt {
+  id        String   @id @default(cuid())
+  test      Test     @relation("TestAttempts", fields: [testId], references: [id])
+  testId    String
+  student   User     @relation("StudentTestAttempts", fields: [studentId], references: [id])
+  studentId String
+  answers   Json
+  score     Float?
+  completedAt DateTime?
+}
+
+model CourseMembership {
+  id       String  @id @default(cuid())
+  course   Course  @relation(fields: [courseId], references: [id])
+  courseId String
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String
+  role     Role    @default(STUDENT)
+  progress Float   @default(0) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LessonCompletion {
+  id        String   @id @default(cuid())
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId  String
+  student   User     @relation("StudentCompletions", fields: [studentId], references: [id])
+  studentId String
+  completed Boolean  @default(false)
+  completedAt DateTime?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  course    Course   @relation("CourseReviews", fields: [courseId], references: [id])
+  courseId  String
+  student   User     @relation("UserReviews", fields: [studentId], references: [id])
+  studentId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
