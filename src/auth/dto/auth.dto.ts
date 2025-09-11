@@ -5,7 +5,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
-  name: string;
+  username: string;
 
   @IsEmail()
   @IsNotEmpty()
@@ -15,9 +15,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(8)
   password: string;
+
+  role?: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
 }
 
-export class AuthDto {
+export class LoginDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
