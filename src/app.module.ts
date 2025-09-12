@@ -9,6 +9,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { configurations } from './config/configurations';
 import { RolesModule } from './roles/roles.module';
+import { CoursesModule } from './courses/courses.module';
+import { ModulesModule } from './modules/modules.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { TestsModule } from './tests/tests.module';
 
 @Module({
   imports: [
@@ -25,6 +29,10 @@ import { RolesModule } from './roles/roles.module';
     AuthModule,
     UserModule,
     RolesModule,
+    CoursesModule,
+    ModulesModule,
+    LessonsModule,
+    TestsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -13,6 +13,11 @@ enum Role {
   ADMIN
 }
 
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -35,13 +40,14 @@ model Course {
   title       String
   description String
   thumbnail   String?
+  status      CourseStatus @default(DRAFT)
 
   instructor     User @relation("InstructorCourses", fields: [instructorId], references: [id])
   instructorId   String
 
   category    String?
   level       String?
-  price       Float?
+  price       Float   @default(0)
   modules     Module[]
   memberships CourseMembership[]
   reviews     Review[]      @relation("CourseReviews")
