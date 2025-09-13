@@ -10,10 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseDto } from './dto/course.dto';
+import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
 import { InstructorOrAdmin, RolesGuard } from 'src/roles';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { AuthenticatedRequest } from 'src/types/authenticatedt.interface';
+import { CourseStatus } from '@prisma/client';
 
 @Controller('courses')
 export class CoursesController {
@@ -50,12 +51,18 @@ export class CoursesController {
     return this.coursesService.getCourseById(courseId);
   }
 
+  @UseGuards(AuthGuard)
+  @Get(':id/details')
+  async getCourseDetailsById(@Param('id') courseId: string) {
+    return this.coursesService.getCourseDetailsById(courseId);
+  }
+
   @InstructorOrAdmin()
   @UseGuards(AuthGuard)
   @Patch('update/:courseId')
   async updateCourse(
     @Param('courseId') courseId: string,
-    @Body() data: Partial<CreateCourseDto>,
+    @Body() data: UpdateCourseDto,
   ) {
     return this.coursesService.updateCourse(courseId, data);
   }
@@ -65,5 +72,19 @@ export class CoursesController {
   @Delete('delete/:courseId')
   async deleteCourse(@Param('courseId') courseId: string) {
     return this.coursesService.deleteCourse(courseId);
+  }
+
+  @InstructorOrAdmin()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Patch(':courseId/status')
+  async changeCourseStatus(
+    @Param('courseId') courseId: string,
+    @Body('status') status: CourseStatus,
+  ) {
+    if (!Object.values(CourseStatus).includes(status)) {
+      throw new Error(`Invalid status: ${status}`);
+    }
+
+    return this.coursesService.updateCourseStatus(courseId, status);
   }
 }

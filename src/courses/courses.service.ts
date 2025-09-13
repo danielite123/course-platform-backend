@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCourseDto } from './dto/course.dto';
+import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
+import { CourseStatus } from '@prisma/client';
 
 @Injectable()
 export class CoursesService {
@@ -60,6 +61,43 @@ export class CoursesService {
     return course;
   }
 
+  async getCourseDetailsById(courseId: string) {
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        instructor: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+        modules: {
+          include: {
+            lessons: true,
+          },
+        },
+        reviews: {
+          include: {
+            student: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new HttpException('Course not found', 404);
+    }
+
+    return course;
+  }
+
   async getCoursesByInstructor(userId: string) {
     return this.prisma.course.findMany({
       where: { instructorId: userId },
@@ -90,10 +128,30 @@ export class CoursesService {
     return { message: 'Course deleted successfully' };
   }
 
-  async updateCourse(courseId: string, data: Partial<CreateCourseDto>) {
-    const updatedCourse = await this.prisma.course.update({
+  async updateCourse(courseId: string, data: UpdateCourseDto) {
+    await this.prisma.course.update({
       where: { id: courseId },
       data,
+    });
+
+    return this.prisma.course.update({
+      where: { id: courseId },
+      data,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async updateCourseStatus(courseId: string, status: CourseStatus) {
+    const updatedCourse = await this.prisma.course.update({
+      where: { id: courseId },
+      data: { status },
+      select: { id: true, status: true },
     });
     return updatedCourse;
   }
