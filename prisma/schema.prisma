@@ -78,8 +78,7 @@ model Lesson {
   duration  Int?
   minScore  Float?
 
-  test      Test?    @relation()
-  testId    String?  
+  test      Test?    @relation("LessonTest")
 
   completions LessonCompletion[]
 
@@ -89,7 +88,7 @@ model Lesson {
 
 model Test {
   id          String   @id @default(cuid())
-  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  lesson      Lesson   @relation("LessonTest", fields: [lessonId], references: [id])
   lessonId    String   @unique
   title       String
   description String?

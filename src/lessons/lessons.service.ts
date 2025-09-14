@@ -27,6 +27,7 @@ export class LessonsService {
   async getLessonById(id: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id },
+      include: { test: true },
     });
 
     return lesson;
@@ -35,6 +36,7 @@ export class LessonsService {
   async getLessonsByModuleId(moduleId: string) {
     const lessons = await this.prisma.lesson.findMany({
       where: { moduleId },
+      include: { test: true },
       orderBy: {
         order: 'asc',
       },
