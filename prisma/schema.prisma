@@ -72,7 +72,7 @@ model Lesson {
   module    Module   @relation(fields: [moduleId], references: [id])
   moduleId  String
   title     String
-  content   String
+  content   Json?
   videoUrl  String?
   order     Int      
   duration  Int?
