@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsUrl,
   IsInt,
+  Min,
 } from 'class-validator';
 
 export class CreateLessonDto {
@@ -13,15 +14,15 @@ export class CreateLessonDto {
 
   @IsString()
   @IsOptional()
-  content?: string;
+  content: string;
 
   @IsOptional()
   @IsUrl({}, { message: 'videoUrl must be a valid URL' })
   videoUrl?: string;
 
   @IsInt()
-  @IsNotEmpty()
-  moduleId: number;
+  @Min(1)
+  order: number;
 }
 
 export class UpdateLessonDto {
@@ -38,4 +39,9 @@ export class UpdateLessonDto {
   @IsOptional()
   @IsUrl({}, { message: 'videoUrl must be a valid URL' })
   videoUrl?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  order?: number;
 }
