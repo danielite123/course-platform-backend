@@ -10,7 +10,7 @@ import {
 import { ModulesService } from './modules.service';
 import { CreateModuleDto, UpdateModuleDto } from './dto/module';
 
-@Controller('modules')
+@Controller('module')
 export class ModulesController {
   constructor(private readonly modulesService: ModulesService) {}
 
@@ -26,7 +26,7 @@ export class ModulesController {
     return this.modulesService.getModuleById(id);
   }
 
-  @Get(':courseId')
+  @Get(':courseId/list')
   async getModulesByCourseId(@Param('courseId') courseId: string) {
     return this.modulesService.getModulesByCourseId(courseId);
   }

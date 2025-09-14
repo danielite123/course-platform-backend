@@ -101,15 +101,6 @@ export class CoursesService {
   async getCoursesByInstructor(userId: string) {
     return this.prisma.course.findMany({
       where: { instructorId: userId },
-      include: {
-        instructor: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
     });
   }
 
@@ -148,11 +139,18 @@ export class CoursesService {
   }
 
   async updateCourseStatus(courseId: string, status: CourseStatus) {
-    const updatedCourse = await this.prisma.course.update({
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      throw new HttpException(`Course with id ${courseId} not found`, 404);
+    }
+
+    return this.prisma.course.update({
       where: { id: courseId },
       data: { status },
       select: { id: true, status: true },
     });
-    return updatedCourse;
   }
 }

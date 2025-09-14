@@ -59,9 +59,9 @@ export class CoursesController {
 
   @InstructorOrAdmin()
   @UseGuards(AuthGuard)
-  @Patch('update/:courseId')
+  @Patch(':id')
   async updateCourse(
-    @Param('courseId') courseId: string,
+    @Param('id') courseId: string,
     @Body() data: UpdateCourseDto,
   ) {
     return this.coursesService.updateCourse(courseId, data);
@@ -69,16 +69,16 @@ export class CoursesController {
 
   @InstructorOrAdmin()
   @UseGuards(AuthGuard)
-  @Delete('delete/:courseId')
-  async deleteCourse(@Param('courseId') courseId: string) {
+  @Delete(':id')
+  async deleteCourse(@Param('id') courseId: string) {
     return this.coursesService.deleteCourse(courseId);
   }
 
   @InstructorOrAdmin()
   @UseGuards(AuthGuard, RolesGuard)
-  @Patch(':courseId/status')
+  @Patch(':id/status')
   async changeCourseStatus(
-    @Param('courseId') courseId: string,
+    @Param('id') courseId: string,
     @Body('status') status: CourseStatus,
   ) {
     if (!Object.values(CourseStatus).includes(status)) {
